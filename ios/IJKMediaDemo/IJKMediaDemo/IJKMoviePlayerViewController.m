@@ -83,7 +83,46 @@
     // [IJKFFMoviePlayerController checkIfPlayerVersionMatch:YES major:1 minor:0 micro:0];
 
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
-
+    
+    
+    if ([_url.scheme isEqualToString:@"rtsp"]) {
+        //大华DSS 标准RTSP流
+        //环路滤波
+        [options setCodecOptionIntValue:0 forKey:@"skip_loop_filter"];
+        //设置最大缓存时长
+        [options setPlayerOptionIntValue:3000 forKey:@"max_cached_duration"];
+        //设置无packet缓存
+        [options setPlayerOptionIntValue:0 forKey:@"packet-buffering"];
+        //不限制拉流缓存大小
+        [options setPlayerOptionIntValue:1 forKey:@"infbuf"];
+        //启动预加载
+        [options setPlayerOptionIntValue:1 forKey:@"start-on-prepared"];
+        //设置探测包数量
+        [options setFormatOptionIntValue:1024 * 16 forKey:@"probsize"];
+        //设置分析流时长
+        [options setFormatOptionIntValue:50000 forKey:@"analyzeduration"];
+        //TCP
+        [options setFormatOptionValue:@"tcp" forKey:@"rtsp_transport"];
+        //硬件解码
+        [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
+    } else if(([_url.scheme isEqualToString:@"rtmp"])) {
+        //大华乐橙 标准RTMP流
+        //设置播放前的最大探测时间
+        [options setPlayerOptionIntValue:100 forKey:@"analyzemaxduration"];
+        //丢帧阈值
+        [options setPlayerOptionIntValue:1 forKey:@"framedrop"];
+        //设置无packet缓存
+        [options setPlayerOptionIntValue:0 forKey:@"packet-buffering"];
+        //每处理一个packet之后刷新io上下文
+        [options setPlayerOptionIntValue:1 forKey:@"flush_packets"];
+        //设置探测包数量
+        [options setPlayerOptionIntValue:4096 forKey:@"probesize"];
+        //设置播放前的探测时间 1,达到首屏秒开效果
+        [options setFormatOptionIntValue:1 forKey:@"analyzeduration"];
+        //设置最大缓存时长
+        [options setPlayerOptionIntValue:3000 forKey:@"max_cached_duration"];
+    }
+    
     if (self.manifest != nil){
         [options setPlayerOptionValue:@"ijklas"         forKey:@"iformat"];
         [options setPlayerOptionIntValue:0              forKey:@"find_stream_info"];

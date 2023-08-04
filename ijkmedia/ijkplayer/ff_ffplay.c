@@ -335,9 +335,9 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *seria
 
 static int packet_queue_get_or_buffering(FFPlayer *ffp, PacketQueue *q, AVPacket *pkt, int *serial, int *finished)
 {
-    assert(finished);
-    if (!ffp->packet_buffering)
-        return packet_queue_get(q, pkt, 1, serial);
+    // assert(finished);
+    // if (!ffp->packet_buffering)
+    //     return packet_queue_get(q, pkt, 1, serial);
 
     while (1) {
         int new_packet = packet_queue_get(q, pkt, 0, serial);
@@ -3218,6 +3218,7 @@ static int read_thread(void *arg)
     int video_stream_count = 0;
     int h264_stream_count = 0;
     int first_h264_stream = -1;
+    int first_h265_stream = -1;
     for (i = 0; i < ic->nb_streams; i++) {
         AVStream *st = ic->streams[i];
         enum AVMediaType type = st->codecpar->codec_type;
@@ -3236,12 +3237,28 @@ static int read_thread(void *arg)
                 if (first_h264_stream < 0)
                     first_h264_stream = i;
             }
+            
+            //修改当多路码流时默认选择大码流h265
+            if(codec_id == AV_CODEC_ID_HEVC){  // edit
+                if(first_h265_stream<0){
+                    first_h265_stream = i;
+                }
+            }
         }
     }
+    
     if (video_stream_count > 1 && st_index[AVMEDIA_TYPE_VIDEO] < 0) {
-        st_index[AVMEDIA_TYPE_VIDEO] = first_h264_stream;
-        av_log(NULL, AV_LOG_WARNING, "multiple video stream found, prefer first h264 stream: %d\n", first_h264_stream);
+        if(first_h265_stream >=0){    //edit
+            st_index[AVMEDIA_TYPE_VIDEO] = first_h265_stream;
+            av_log(NULL, 16  , "multiple video stream found, prefer first h265 stream: %d\n",
+                   first_h265_stream);
+        }else{
+            st_index[AVMEDIA_TYPE_VIDEO] = first_h264_stream;
+            av_log(NULL, 16  , "multiple video stream found, prefer first h264 stream: %d\n",
+                   first_h264_stream);
+        }
     }
+    
     if (!ffp->video_disable)
         st_index[AVMEDIA_TYPE_VIDEO] =
             av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO,
