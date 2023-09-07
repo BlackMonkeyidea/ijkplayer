@@ -67,10 +67,6 @@ public class SampleMediaListFragment extends Fragment {
                 VideoActivity.intentTo(activity, url, name);
             }
         });
-        mAdapter.addItem("https://cmgw-vpc.lechange.com:8890/flv/LCO/8L053C9PAZ843EF/0/1/20230721173100/31ff0d5d48797e33f79f5cdf4a8640ad.flv?proto=https", "乐橙flv");
-        mAdapter.addItem("http://cmgw-vpc.lechange.com:8888/LCO/8L053C9PAZ843EF/0/0/20230721T022824/265bb79b7fc1a48277e4b9b00d2f393e.m3u8", "乐橙hls");
-        mAdapter.addItem("https://rtmp01open.ys7.com:9188/v3/openlive/L22038083_1_1.flv?expire=1690028400&id=602595658339196928&t=ec968ccadd89fa22c7b03c33202f665d9060ed8577c14e86318c25977b088238&ev=100", "萤石flv");
-        mAdapter.addItem("http://open.ys7.com/v3/openlive/L22038083_1_1.m3u8?expire=1690023675&id=602518797793886208&t=b529424ed2dd09eeeed7887675c81616ec550fcec1b4b12574848bed2c8a01f0&ev=100", "萤石hls");
         String manifest_string =
                 "{\n" +
                 "    \"version\": \"1.0.0\",\n" +
